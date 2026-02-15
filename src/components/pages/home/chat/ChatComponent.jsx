@@ -28,12 +28,32 @@ export default function ChatComponent({ estadoPdfBackend }) {
     onEnviar,
   } = useChat({ isPdfCargado, isPdfSubiendo });
 
+  const textoEstado = isPdfSubiendo
+    ? "Analizando PDF…"
+    : isEnviando
+      ? "La IA está pensando…"
+      : isPdfCargado
+        ? "Conectado"
+        : "Listo";
+
+  const placeholderEntrada = isPdfSubiendo
+    ? "Analizando PDF…"
+    : !isPdfCargado
+      ? "Primero cargá un PDF…"
+      : "Escribí tu mensaje…";
+
   return (
     <div className="h-full min-h-0 flex flex-col overflow-hidden">
       <div className="h-12 shrink-0 px-4 flex items-center justify-between border-b">
         <h2 className="text-sm font-semibold">Chat</h2>
-        <span className="text-xs text-slate-500">
-          {isPdfSubiendo ? "Subiendo PDF…" : isPdfCargado ? "Conectado" : "Listo"}
+        <span className="text-xs text-slate-500 flex items-center gap-2">
+          {(isPdfSubiendo || isEnviando) && (
+            <span
+              className="inline-block h-3 w-3 rounded-full border-2 border-slate-300 border-t-slate-700 animate-spin"
+              aria-hidden="true"
+            />
+          )}
+          <span>{textoEstado}</span>
         </span>
       </div>
 
@@ -55,9 +75,26 @@ export default function ChatComponent({ estadoPdfBackend }) {
 
       <div className="flex-1 min-h-0 overflow-auto p-4 space-y-3">
         {mensajes.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-4 text-sm text-slate-600 bg-slate-50">
-            Escribí una pregunta sobre el PDF y presioná “Enviar”.
-          </div>
+          isPdfSubiendo ? (
+            <div className="mr-auto max-w-[92%] rounded-lg px-3 py-2 text-sm bg-white border text-slate-900">
+              <div className="flex items-center gap-2 text-xs text-slate-600 mb-2">
+                <div
+                  className="h-4 w-4 rounded-full border-2 border-slate-300 border-t-slate-700 animate-spin"
+                  aria-hidden="true"
+                />
+                <span>Analizando PDF…</span>
+              </div>
+              <div className="space-y-2">
+                <div className="h-2 w-40 rounded bg-slate-200 animate-pulse" />
+                <div className="h-2 w-56 rounded bg-slate-200 animate-pulse" />
+                <div className="h-2 w-32 rounded bg-slate-200 animate-pulse" />
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-lg border border-dashed p-4 text-sm text-slate-600 bg-slate-50">
+              Escribí una pregunta sobre el PDF y presioná “Enviar”.
+            </div>
+          )
         ) : (
           mensajes.map((m) => (
             <div
@@ -73,18 +110,42 @@ export default function ChatComponent({ estadoPdfBackend }) {
           ))
         )}
 
-        {isEnviando && isEsperaLarga && (
+        {isPdfSubiendo && mensajes.length > 0 && (
           <div className="mr-auto max-w-[92%] rounded-lg px-3 py-2 text-sm bg-white border text-slate-900">
+            <div className="flex items-center gap-2 text-xs text-slate-600">
+              <div
+                className="h-4 w-4 rounded-full border-2 border-slate-300 border-t-slate-700 animate-spin"
+                aria-hidden="true"
+              />
+              <span>Analizando PDF…</span>
+            </div>
+          </div>
+        )}
+
+        {isEnviando && !isEsperaLarga && !isPdfSubiendo && (
+          <div className="mr-auto max-w-[92%] rounded-lg px-3 py-2 text-sm bg-white border text-slate-900">
+            <div className="flex items-center gap-2 text-xs text-slate-600">
+              <div
+                className="h-4 w-4 rounded-full border-2 border-slate-300 border-t-slate-700 animate-spin"
+                aria-hidden="true"
+              />
+              <span>La IA está pensando…</span>
+            </div>
+          </div>
+        )}
+
+        {isEnviando && isEsperaLarga && (
+          <div className="mr-auto max-w-[52%] rounded-lg px-3 py-2 text-sm bg-white  text-slate-900">
             <div className="text-xs text-slate-600 mb-2">
               Despertando al robot…{" "}
               <span className="tabular-nums">
                 ({formatearDuracion(segundosEsperando)})
               </span>
             </div>
-            <div className="rounded-md overflow-hidden border bg-slate-50">
+            <div className="rounded-md overflow-hidden ">
               <video
                 src={urlVideoRobotDormido}
-                className="w-full max-w-[360px] h-auto"
+                className="w-full max-w-[100px] h-auto  rounded-lg "
                 autoPlay
                 loop
                 muted
@@ -95,10 +156,7 @@ export default function ChatComponent({ estadoPdfBackend }) {
                   e.currentTarget.style.display = "none";
                 }}
               />
-              <div className="px-3 py-2 text-xs text-slate-600">
-                Si no ves el video, configurá `VITE_SLEEPY_ROBOT_VIDEO_URL` o dejalo en esta
-                misma carpeta como `sleepy-robot.mp4`.
-              </div>
+            
             </div>
           </div>
         )}
@@ -117,13 +175,7 @@ export default function ChatComponent({ estadoPdfBackend }) {
             value={textoEntrada}
             onChange={(e) => onCambiarTextoEntrada(e.target.value)}
             className="flex-1 rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200 disabled:bg-slate-50 disabled:text-slate-500"
-            placeholder={
-              isPdfSubiendo
-                ? "Esperando a que termine la subida…"
-                : !isPdfCargado
-                  ? "Primero cargá un PDF…"
-                  : "Escribí tu mensaje…"
-            }
+            placeholder={placeholderEntrada}
             disabled={isBloqueado}
           />
           <button
