@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import useChat from "./useChat";
 import videoDormido from "./sleepy-robot.mp4";
 
@@ -15,6 +16,7 @@ export default function ChatComponent({ estadoPdfBackend }) {
   const errorPdf = estadoPdfBackend?.error || null;
   const urlVideoRobotDormido =
     import.meta.env.VITE_SLEEPY_ROBOT_VIDEO_URL || videoDormido;
+  const refTextarea = useRef(null);
 
   const {
     mensajes,
@@ -41,6 +43,18 @@ export default function ChatComponent({ estadoPdfBackend }) {
     : !isPdfCargado
       ? "Primero cargá un PDF…"
       : "Escribí tu mensaje…";
+
+  useEffect(() => {
+    const el = refTextarea.current;
+    if (!el) return;
+
+    // Autosize estilo "GPT": crece hasta un max, luego scroll interno.
+    el.style.height = "0px";
+    const maxPx = 160; // ~8-9 líneas aprox según font/line-height
+    const siguiente = Math.min(el.scrollHeight, maxPx);
+    el.style.height = `${siguiente}px`;
+    el.style.overflowY = el.scrollHeight > maxPx ? "auto" : "hidden";
+  }, [textoEntrada]);
 
   return (
     <div className="h-full min-h-0 flex flex-col overflow-hidden">
@@ -170,17 +184,27 @@ export default function ChatComponent({ estadoPdfBackend }) {
           onEnviar();
         }}
       >
-        <div className="flex items-center gap-2">
-          <input
+        <div className="flex items-end gap-2">
+          <textarea
+            ref={refTextarea}
             value={textoEntrada}
             onChange={(e) => onCambiarTextoEntrada(e.target.value)}
-            className="flex-1 rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200 disabled:bg-slate-50 disabled:text-slate-500"
+            onKeyDown={(e) => {
+              if (e.key !== "Enter") return;
+              if (e.shiftKey) return; // Shift+Enter => nueva línea
+              e.preventDefault(); // Enter => enviar
+              if (isBloqueado) return;
+              if (!textoEntrada.trim()) return;
+              onEnviar();
+            }}
+            rows={1}
+            className="flex-1 rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200 disabled:bg-slate-50 disabled:text-slate-500 resize-none leading-5 min-h-[40px] max-h-[160px]"
             placeholder={placeholderEntrada}
             disabled={isBloqueado}
           />
           <button
             type="submit"
-            className="rounded-md bg-slate-900 text-white px-3 py-2 text-sm font-medium hover:bg-slate-800 active:bg-slate-950 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-md bg-slate-900 text-white px-3 py-2 text-sm font-medium hover:bg-slate-800 active:bg-slate-950 disabled:opacity-50 disabled:cursor-not-allowed h-[40px]"
             disabled={isBloqueado || !textoEntrada.trim()}
           >
             {isEnviando ? "Enviando…" : "Enviar"}
