@@ -53,7 +53,7 @@ export default function HomeComponent({
           role="separator"
           aria-orientation="vertical"
         >
-          <button
+{/*           <button
             type="button"
             className="absolute z-30 inline-flex items-center justify-center h-8 w-8 rounded-full border bg-white/95 backdrop-blur text-slate-700 shadow-sm hover:bg-white active:bg-slate-50"
             onClick={(e) => {
@@ -69,7 +69,7 @@ export default function HomeComponent({
             title="Intercambiar paneles"
           >
             ⇄
-          </button>
+          </button> */}
           <div className="h-10 w-0.5 bg-slate-400/70 rounded" />
         </div>
 
