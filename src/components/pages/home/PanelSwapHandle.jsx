@@ -2,6 +2,8 @@ import { escribirPanelEnDragEvent } from "./panel-dnd";
 
 export default function PanelSwapHandle({ tipoPanel, etiqueta }) {
   return (
+ <>
+ {/* 
     <button
       type="button"
       draggable
@@ -14,5 +16,7 @@ export default function PanelSwapHandle({ tipoPanel, etiqueta }) {
     >
       ⠿ {etiqueta}
     </button>
+ */}
+ </>
   );
 }
