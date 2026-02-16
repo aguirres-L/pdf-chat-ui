@@ -32,11 +32,12 @@ export async function subirPdf(archivoPdf) {
   });
 }
 
-export async function consultarPdf(pregunta) {
+export async function consultarPdf(pregunta, opciones = {}) {
+  const { usarIaAdicional = false } = opciones;
   return await requestJson(`${API_BASE_URL}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ pregunta }),
+    body: JSON.stringify({ pregunta, usar_ia_adicional: usarIaAdicional }),
   });
 }
 

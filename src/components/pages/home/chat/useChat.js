@@ -46,7 +46,7 @@ export default function useChat({ isPdfCargado, isPdfSubiendo }) {
     setTextoEntrada(valor);
   }, []);
 
-  const onEnviar = useCallback(async () => {
+  const onEnviar = useCallback(async (usarIaAdicional = false) => {
     const pregunta = (textoEntrada || "").trim();
     if (!pregunta) return;
 
@@ -63,12 +63,13 @@ export default function useChat({ isPdfCargado, isPdfSubiendo }) {
     setTextoEntrada("");
 
     try {
-      const data = await consultarPdf(pregunta);
+      const data = await consultarPdf(pregunta, { usarIaAdicional });
       const respuesta = (data?.respuesta || "").toString().trim();
       const mensajeAi = {
         id: crearId(),
         rol: "ai",
         texto: respuesta || "No recibí respuesta del modelo.",
+        modelo: (data?.modelo || "").toString().trim() || null,
       };
       setMensajes((prev) => [...prev, mensajeAi]);
     } catch (err) {

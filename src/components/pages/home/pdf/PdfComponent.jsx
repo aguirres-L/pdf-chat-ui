@@ -89,7 +89,9 @@ export default function PdfComponent({ archivoPdf, onSeleccionarArchivoPdf }) {
         <div className="h-full p-4">
           <div
             className={`h-full rounded-lg border-2 border-dashed p-6 flex flex-col items-center justify-center text-center transition-colors ${
-              isArrastrando ? "border-slate-900 bg-slate-50" : "border-slate-200"
+              isArrastrando
+                ? "border-slate-900 dark:border-slate-400 bg-slate-50 dark:bg-slate-700/50"
+                : "border-slate-200 dark:border-slate-600"
             }`}
             onDragEnter={(e) => {
               onValidarDrop(e);
@@ -102,12 +104,12 @@ export default function PdfComponent({ archivoPdf, onSeleccionarArchivoPdf }) {
             }}
             onDrop={onDropArchivo}
           >
-            <div className="text-sm font-medium">Arrastrá y soltá un PDF</div>
-            <div className="mt-1 text-xs text-slate-600">
+            <div className="text-sm font-medium text-slate-900 dark:text-slate-100">Arrastrá y soltá un PDF</div>
+            <div className="mt-1 text-xs text-slate-600 dark:text-slate-400">
               o usá el botón de abajo.
             </div>
 
-            <label className="mt-4 inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-sm font-medium bg-white hover:bg-slate-50 active:bg-slate-100 cursor-pointer">
+            <label className="mt-4 inline-flex items-center justify-center rounded-md border border-slate-200 dark:border-slate-600 px-3 py-1.5 text-sm font-medium bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-600 active:bg-slate-100 dark:active:bg-slate-500 cursor-pointer">
               Cargar PDF
               <input
                 type="file"
@@ -122,15 +124,15 @@ export default function PdfComponent({ archivoPdf, onSeleccionarArchivoPdf }) {
         <>
           <div className="absolute top-2 left-2 right-2 z-20 flex items-center justify-between gap-2">
             <div className="min-w-0 flex-1">
-              <div className="inline-flex max-w-full items-center gap-2 rounded-md border bg-white/90 backdrop-blur px-2 py-1 text-xs text-slate-700">
+              <div className="inline-flex max-w-full items-center gap-2 rounded-md border border-slate-200 dark:border-slate-600 bg-white/90 dark:bg-slate-700/90 backdrop-blur px-2 py-1 text-xs text-slate-700 dark:text-slate-200">
                 <span className="truncate">{nombreArchivo}</span>
               </div>
             </div>
 
-            <div className="shrink-0 inline-flex items-center gap-1 rounded-md border bg-white/90 backdrop-blur px-1 py-1">
+            <div className="shrink-0 inline-flex items-center gap-1 rounded-md border border-slate-200 dark:border-slate-600 bg-white/90 dark:bg-slate-700/90 backdrop-blur px-1 py-1">
               <button
                 type="button"
-                className="rounded-md border px-2 py-1 text-xs disabled:opacity-50 bg-white hover:bg-slate-50"
+                className="rounded-md border border-slate-200 dark:border-slate-600 px-2 py-1 text-xs disabled:opacity-50 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-600"
                 onClick={() => setPaginaActual((p) => Math.max(1, p - 1))}
                 disabled={!isPuedeAnterior}
                 aria-label="Página anterior"
@@ -138,12 +140,12 @@ export default function PdfComponent({ archivoPdf, onSeleccionarArchivoPdf }) {
               >
                 ←
               </button>
-              <span className="text-xs text-slate-600 tabular-nums min-w-[72px] text-center select-none">
+              <span className="text-xs text-slate-600 dark:text-slate-300 tabular-nums min-w-[72px] text-center select-none">
                 {cantidadPaginas ? `${paginaActual}/${cantidadPaginas}` : "—"}
               </span>
               <button
                 type="button"
-                className="rounded-md border px-2 py-1 text-xs disabled:opacity-50 bg-white hover:bg-slate-50"
+                className="rounded-md border border-slate-200 dark:border-slate-600 px-2 py-1 text-xs disabled:opacity-50 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-600"
                 onClick={() =>
                   setPaginaActual((p) =>
                     cantidadPaginas ? Math.min(cantidadPaginas, p + 1) : p,
@@ -156,7 +158,7 @@ export default function PdfComponent({ archivoPdf, onSeleccionarArchivoPdf }) {
                 →
               </button>
 
-              <label className="ml-1 inline-flex items-center justify-center rounded-md border px-2 py-1 text-xs font-medium bg-white hover:bg-slate-50 active:bg-slate-100 cursor-pointer">
+              <label className="ml-1 inline-flex items-center justify-center rounded-md border border-slate-200 dark:border-slate-600 px-2 py-1 text-xs font-medium bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-600 active:bg-slate-100 dark:active:bg-slate-500 cursor-pointer">
                 Cambiar
                 <input
                   type="file"
@@ -171,16 +173,16 @@ export default function PdfComponent({ archivoPdf, onSeleccionarArchivoPdf }) {
           <div className="h-full overflow-auto">
             <div
               ref={refContenedor}
-              className="min-h-full pt-12 p-4 flex justify-center bg-slate-100"
+              className="min-h-full pt-12 p-4 flex justify-center bg-slate-100 dark:bg-slate-900"
             >
               <Document
                 file={urlPdf}
                 onLoadSuccess={({ numPages }) => setCantidadPaginas(numPages)}
                 loading={
-                  <div className="text-sm text-slate-600">Cargando PDF…</div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Cargando PDF…</div>
                 }
                 error={
-                  <div className="text-sm text-red-700">
+                  <div className="text-sm text-red-700 dark:text-red-400">
                     No se pudo cargar el PDF.
                   </div>
                 }
